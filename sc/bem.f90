@@ -92,7 +92,7 @@ program main
   do i=1,n
      xt=y(1,nd(2,i))-y(1,nd(1,i)) !要素に沿うベクトル(xt, yt)を
      yt=y(2,nd(2,i))-y(2,nd(1,i)) ! 計算
-     le(i)=sqrt(xt**2+yt**2) !i番要素の長さ
+     le(i)=????? !i番要素の長さ
      xt=xt/le(i) !要素に沿う単位ベクトルのx1成分
      yt=yt/le(i) !要素に沿う単位ベクトルのx2成分
      an(1,i)=yt !法線ベクトルは要素に沿うベクトル
@@ -131,16 +131,16 @@ program main
   do i=1,n !選点のループ
      do j=1,n !要素のループ
         do ig=1,ng !ガウス積分のループ
-           yxi(:)=((1.d0-gzai(ig))*y(:,nd(1,j))+(1.d0+gzai(ig))*y(:,nd(2,j)))*0.5d0 !式(86)
-           r=sqrt(dot_product(x(:,i)-yxi(:),x(:,i)-yxi(:))) ! r=|x-y(ξ)| 式(87)
-           dotp=dot_product(x(:,i)-yxi(:),an(:,j)) ! dotp=(x-y(ξ))・n 式(87)
-           hank=bessel_jn(1,wn*r)+ione*bessel_yn(1,wn*r) ! hank=H_1^(1)(k|x-y(ξ)|) 式(87)
-           hmat(i,j)=hmat(i,j)+0.125d0*ione*wn*le(j)*hank*dotp/r*wei(ig) !(86)式
+           yxi(:)=????? !式(86)
+           r=????? ! r=|x-y(ξ)| 式(87)
+           dotp=????? ! dotp=(x-y(ξ))・n 式(87)
+           hank=????? ! hank=H_1^(1)(k|x-y(ξ)|) 式(87)
+           hmat(i,j)=hmat(i,j)+0.125d0*ione*wn*le(j)*hank*dotp/r*wei(ig) !(87)式
         end do
      end do
   end do
   do i=1,n
-     hmat(i,i)=hmat(i,i)+0.5d0 !式(84)の1/2δijを足す
+     hmat(i,i)=hmat(i,i)+0.5d0 !係数行列に式(85)の1/2δijを足す
   end do
 
   !---------------------------------------------------------------------------
@@ -176,15 +176,15 @@ program main
   ! 内点計算
   allocate(pip(nip(0))) !pip(i): i番内点における複素音圧
   do i=1,nip(0) !内点のループ
-     r=sqrt(dot_product(xip(:,i)-xs(:),xip(:,i)-xs(:))) ! r=内点と点源の距離
-     pip(i)=0.25d0*ione*(bessel_j0(wn*r)+ione*bessel_y0(wn*r)) ! 入射波（式(89)のG(x,x^s)）
+     r=????? ! r=内点と点源の距離
+     pip(i)=????? ! 入射波（式(89)のG(x,x^s)）、式(64)も参照のこと
      do j=1,n !要素のループ
         do ig=1,ng !ガウス積分のループ
-           yxi(:)=((1.d0-gzai(ig))*y(:,nd(1,j))+(1.d0+gzai(ig))*y(:,nd(2,j)))*0.5d0 !式(86)の内点版
-           r=sqrt(dot_product(xip(:,i)-yxi(:),xip(:,i)-yxi(:))) ! r=|x-y(ξ)| 式(87)の内点版
-           dotp=dot_product(xip(:,i)-yxi(:),an(:,j)) ! dotp=(x-y(ξ))・n 式(87)
-           hank=bessel_jn(1,wn*r)+ione*bessel_yn(1,wn*r) ! hank=H_1^(1)(k|x-y(ξ)|) 式(87)
-           pip(i)=pip(i)-0.125d0*ione*wn*le(j)*hank*dotp/r*wei(ig)*p(j) !式(89)
+           yxi(:)=????? !式(86)
+           r=????? ! r=|x-y(ξ)| 式(87)の内点版
+           dotp=???? ! dotp=(x-y(ξ))・n 式(87)の内点版
+           hank=????? ! hank=H_1^(1)(k|x-y(ξ)|) 式(87)の内点版
+           pip(i)=pip(i)-????? !式(89)の右辺第二項
         end do
      end do
   end do
@@ -197,15 +197,10 @@ program main
      do i=0,nip(1)
         ip=ip+1
         write(1,*) xip(:,ip), real(pip(ip)), aimag(pip(ip))
-        if(sqrt(xip(1,ip)**2+xip(2,ip)**2).le.0.05d0) then
-           intensity=intensity+sqrt(real(pip(ip))**2+aimag(pip(ip))**2)
-           ! write(*,*) ip, xip(:,ip)
-        end if
      end do
      write(1,*)
   end do
   close(1)
-  write(*,*) intensity*0.25d0
   
   ! 結果（複素音圧の実部 = t=0における時間域の音圧分布）をreslt.pngに保存
   call system("gnuplot plot.gp")
